@@ -1,0 +1,47 @@
+---
+import { Image } from 'astro:assets';
+import imagenHero from '../../assets/congreso.png'; 
+---
+
+<!-- 1. CAMBIO: Fondo oscuro profundo (como el póster) y texto blanco para máximo contraste -->
+<div class="hero min-h-screen lg:min-h-[75vh] bg-gradient-to-tr from-[#090a0f] via-[#0d0e15] to-[#1a1b29] text-white">
+  <div class="hero-content flex-col lg:flex-row-reverse gap-8 lg:gap-16">
+    
+   <Image
+      src={imagenHero}
+      alt="Imagen del Congreso"
+      class="max-w-sm lg:max-w-xs rounded-lg w-auto h-auto max-h-[55vh] lg:max-h-[65vh] object-contain border border-white/10 shadow-[0_0_60px_rgba(255,255,255,0.15)]"
+      />
+    
+    <div class="max-w-xl">
+      <!-- 2. CAMBIO: El texto pequeño ahora es color oro/ámbar suave -->
+      <header class="space-y-2">
+        <span class="text-xs font-bold tracking-widest text-amber-400 uppercase block">
+          Tercera Edición — Congreso Anual
+        </span>
+        <!-- 3. CAMBIO: Letras blancas y el énfasis en color Oro/Amarillo como la letra del póster -->
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1]">
+          "El Siglo del <br class="hidden sm:inline" /> 
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-500">
+            Espíritu Santo"
+          </span>
+        </h1>
+      </header>
+
+      <p class="py-6 text-lg text-slate-300 font-medium">
+        Tercera edición de nuestro congreso anual.
+      </p>
+      
+      <!-- 4. CAMBIO: Botones elegantes que combinan con el fondo oscuro y el oro -->
+      <div class="flex flex-wrap gap-3">
+        <button class="btn bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold border-none px-8 rounded-xl shadow-lg transition-all">
+          Inscríbete
+        </button>
+        <button class="btn btn-outline border-white/20 hover:bg-white/10 text-white font-bold px-8 rounded-xl">
+          Más información
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>

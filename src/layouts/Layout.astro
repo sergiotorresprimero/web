@@ -1,0 +1,36 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.svelte';
+
+// 1. Importamos tu imagen original
+import logoOriginal from '../assets/logo.png';
+
+// 2. Importamos la herramienta de optimización de Astro
+import { getImage } from 'astro:assets';
+
+// 3. Procesamos la imagen para que Astro cree un WebP optimizado de 40x40 píxeles
+const logoOptimizado = await getImage({
+  src: logoOriginal,
+  width: 40,
+  height: 40,
+  format: 'webp'
+});
+
+---
+
+
+
+
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>Landing Page Increíble</title>
+	</head>
+	<body class="bg-base-100 text-base-content antialiased">
+        <Navbar client:load srcLogo={logoOptimizado.src} />
+		<slot />
+	</body>
+</html>
