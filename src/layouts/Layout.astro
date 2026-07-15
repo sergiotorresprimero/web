@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Navbar from '../components/Navbar.svelte';
+import Footer from '../components/Footer.astro';
 
 // 1. Importamos tu imagen original
 import logoOriginal from '../assets/logo.png';
@@ -31,6 +32,9 @@ const logoOptimizado = await getImage({
 	</head>
 	<body class="bg-base-100 text-base-content antialiased">
         <Navbar client:load srcLogo={logoOptimizado.src} />
+		
 		<slot />
+
+		<Footer />
 	</body>
 </html>

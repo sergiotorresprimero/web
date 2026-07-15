@@ -1,0 +1,86 @@
+---
+import { Image } from 'astro:assets';
+// Asegúrate de tener tus imágenes en la ruta correcta de tu proyecto
+import logo from '../assets/logo.png'; 
+import mapaImg from '../assets/mapa.png'; 
+---
+
+<footer class="bg-[#030611] text-slate-400 border-t border-white/5 relative overflow-hidden">
+  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[150px] bg-blue-950/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-6 pt-8 md:pt-10 pb-2 relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
+      
+      <div class="space-y-4 self-start">
+        <div class="flex items-center gap-3 h-10">
+          <Image 
+            src={logo} 
+            alt="Centro Mundial de Evangelismo" 
+            class="w-10 h-10 object-contain brightness-110"
+          />
+          <span class="text-white font-bold text-lg tracking-wide leading-none">
+            Centro Mundial de Evangelismo
+          </span>
+        </div>
+        <div class="text-sm text-slate-400 leading-relaxed space-y-1">
+          <p class="font-medium text-slate-300">Cra 70 No. 1A - 70 | Polideportivo Lourdes</p>
+          <p>Cali, Colombia</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 md:mx-auto w-full md:max-w-[240px] flex flex-col items-start">
+        <h3 class="text-white font-semibold text-sm uppercase tracking-wider h-10 flex items-center">
+          Cómo llegar
+        </h3>
+        <a 
+          href="https://www.google.com/maps/place/Unidad+Recreativa+de+Lourdes/@3.3930933,-76.5565273,16z/data=!4m6!3m5!1s0x8e30a3e49007f14d:0xd774fa190f6a545f!8m2!3d3.3928966!4d-76.5553301!16s%2Fg%2F1pztmh9jr?entry=ttu&g_ep=EgoyMDI2MDcxMi4wIKXMDSoASAFQAw%3D%3D" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="group block relative rounded-xl overflow-hidden border border-white/10 hover:border-amber-400/40 transition-all duration-300 shadow-lg aspect-[16/10] bg-slate-950 w-full"
+        >
+          <Image 
+            src={mapaImg} 
+            alt="Ubicación de la iglesia en el mapa" 
+            class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500"
+          />
+          
+          <div class="absolute inset-0 bg-gradient-to-t from-[#030611]/90 via-[#030611]/40 to-transparent"></div>
+          
+          <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.6)] group-hover:scale-110 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-[9px] text-amber-400 font-bold uppercase tracking-widest mt-1 bg-[#030611]/90 px-2 py-0.5 rounded border border-amber-400/20 shadow-md">
+              Ver en Maps
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <div class="space-y-4 md:w-48 self-start">
+        <h3 class="text-white font-semibold text-sm uppercase tracking-wider h-10 flex items-center">
+          Navegación
+        </h3>
+        <ul class="space-y-2.5 text-sm">
+          <li>
+            <a href="#hero" class="hover:text-amber-400 transition-colors">Inicio</a>
+          </li>
+          <li>
+            <a href="#congreso" class="hover:text-amber-400 transition-colors">Congreso 2026</a>
+          </li>
+          <li>
+            <a href="#reuniones" class="hover:text-amber-400 transition-colors">Nuestras Reuniones</a>
+          </li>
+          <li>
+            <a href="#ofrendas" class="hover:text-amber-400 transition-colors font-medium text-slate-300">Diezmos y Ofrendas</a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-white/5 text-center text-xs">
+      <p>© 2026 Centro Mundial de Evangelismo. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</footer>

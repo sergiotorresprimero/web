@@ -3,9 +3,9 @@
   export let srcLogo;
 
   const enlaces = [
-    { texto: 'Congreso 2026', ruta: '#congreso2026' },
-    { texto: 'Nuestras Reuniones', ruta: '#reuniones' },
-    { texto: 'Diezmos y Ofrendas', ruta: '#diezmosyofrendas' }
+    { texto: 'Congreso 2026', ruta: '/congreso2026' },
+    { texto: 'Nuestras Reuniones', ruta: '/reuniones' },
+    { texto: 'Diezmos y Ofrendas', ruta: '/diezmosyofrendas' }
   ];
 </script>
 
