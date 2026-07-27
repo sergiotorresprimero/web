@@ -1,5 +1,6 @@
 <script>
   import { supabase } from '../../lib/supabase.js';
+  import { capitalizarTexto } from '../../lib/utils.js';
 
   // Variables de estado del formulario
   let nombre = '';
@@ -8,17 +9,10 @@
   
   let congregacion = '';
   let otraCongregacion = '';
-  
-  let tieneOcupacion = 'No';
-  let detalleOcupacion = '';
-  
-  let vieneConNinos = 'No';
-  let cantidadNinos = 1;
-  let nombresNinos = '';
 
   // Estados de la interfaz
   let cargando = false;
-  let mensajeExito = false;
+  let mostrarOverlay = false;
   let errorMensaje = '';
 
   async function handleSubmit(event) {
@@ -26,14 +20,16 @@
     cargando = true;
     errorMensaje = '';
     
+    const congregacionSeleccionada = congregacion === 'Otra' ? otraCongregacion.trim() : congregacion;
+
     const datosEnvio = {
-      nombre_completo: nombre.trim(),
+      nombre_completo: capitalizarTexto(nombre),
       telefono: telefono.trim(),
-      ciudad: ciudad.trim(),
-      congregacion: congregacion === 'Otra' ? otraCongregacion.trim() : congregacion,
-      ocupacion: tieneOcupacion === 'Si' ? detalleOcupacion.trim() : 'Ninguna',
-      cantidad_ninos: vieneConNinos === 'Si' ? Number(cantidadNinos) : 0,
-      nombres_ninos: vieneConNinos === 'Si' ? nombresNinos.trim() : null
+      ciudad: capitalizarTexto(ciudad),
+      congregacion: congregacion === 'Otra' ? capitalizarTexto(congregacionSeleccionada) : congregacionSeleccionada,
+      ocupacion: 'Ninguna',
+      cantidad_ninos: 0,
+      nombres_ninos: null
     };
 
     try {
@@ -43,7 +39,8 @@
 
       if (error) throw error;
 
-      mensajeExito = true;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      mostrarOverlay = true;
       limpiarCampos();
     } catch (err) {
       console.error('Error al insertar:', err);
@@ -59,11 +56,10 @@
     ciudad = '';
     congregacion = '';
     otraCongregacion = '';
-    tieneOcupacion = 'No';
-    detalleOcupacion = '';
-    vieneConNinos = 'No';
-    cantidadNinos = 1;
-    nombresNinos = '';
+  }
+
+  function cerrarOverlay() {
+    mostrarOverlay = false;
   }
 </script>
 
@@ -74,44 +70,21 @@
   <div class="max-w-3xl mx-auto px-6 relative z-10">
     
     <!-- Encabezado Moderno & Profesional -->
-    <div class="text-center mb-8 md:mb-10">
-      
-      <!-- Insignia Badge refinada -->
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-semibold tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200/60 mb-4 shadow-2xs">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        CONGRESO 2026
-      </div>
-
-      <!-- Título Principal con degradado sutil en slate -->
+    <div class="text-center mb-6">
       <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
-        Formulario de Inscripción
+        Formulario de Inscripción Congreso
       </h2>
-
-      <!-- Párrafo Guía Mínimo y Limpio -->
-      <p class="text-xs md:text-sm text-slate-500 max-w-sm mx-auto font-medium mt-2">
-        Completa tus datos a continuación para confirmar tu asistencia.
-      </p>
-
     </div>
 
-    <!-- Formulario -->
-    <div class="bg-slate-50/80 backdrop-blur-xs border border-slate-200/80 rounded-2xl p-6 md:p-10 shadow-sm transition-shadow duration-300">
-      
-      {#if mensajeExito}
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 p-6 rounded-xl text-center space-y-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-emerald-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0" />
-          </svg>
-          <h3 class="text-xl font-bold text-slate-900">¡Inscripción Exitosa!</h3>
-          <p class="text-sm text-slate-600">Tus datos han sido registrados correctamente para el Congreso 2026. ¡Te esperamos!</p>
-          <button 
-            on:click={() => mensajeExito = false}
-            class="mt-4 px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
-          >
-            Inscribir a otra persona
-          </button>
-        </div>
-      {:else}
+    <!-- Formulario con su texto guía centrado y pegado arriba de la card -->
+    <div class="space-y-3">
+      <!-- Texto guía con tamaño aumentado (text-sm md:text-base) -->
+      <p class="text-sm md:text-base text-slate-500 font-medium text-center px-2">
+        Por favor diligencia los siguientes datos:
+      </p>
+
+      <div class="bg-slate-50/80 backdrop-blur-xs border border-slate-200/80 rounded-2xl p-6 md:p-10 shadow-sm transition-shadow duration-300">
+        
         <form on:submit={handleSubmit} class="space-y-6">
           
           {#if errorMensaje}
@@ -192,78 +165,6 @@
             {/if}
           </div>
 
-          <!-- Pregunta 2: Ocupación en la iglesia -->
-          <div>
-            <span class="block text-sm font-semibold text-slate-800 mb-2">¿Tiene alguna ocupación en la iglesia donde asiste? *</span>
-            <div class="flex items-center gap-6 pt-1">
-              <label class="inline-flex items-center gap-2 cursor-pointer text-sm text-slate-700">
-                <input type="radio" bind:group={tieneOcupacion} value="Si" class="h-4 w-4 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
-                <span>Sí</span>
-              </label>
-              <label class="inline-flex items-center gap-2 cursor-pointer text-sm text-slate-700">
-                <input type="radio" bind:group={tieneOcupacion} value="No" class="h-4 w-4 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
-                <span>No</span>
-              </label>
-            </div>
-
-            {#if tieneOcupacion === 'Si'}
-              <div class="mt-3">
-                <input 
-                  type="text" 
-                  bind:value={detalleOcupacion}
-                  required
-                  placeholder="Digita tu ocupación o cargo" 
-                  class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200 text-sm"
-                />
-              </div>
-            {/if}
-          </div>
-
-          <!-- Pregunta 3: Niños menores de 10 años -->
-          <div>
-            <span class="block text-sm font-semibold text-slate-800 mb-2">¿Viene con algún niño menor de 10 años? *</span>
-            <div class="flex items-center gap-6 pt-1">
-              <label class="inline-flex items-center gap-2 cursor-pointer text-sm text-slate-700">
-                <input type="radio" bind:group={vieneConNinos} value="Si" class="h-4 w-4 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
-                <span>Sí</span>
-              </label>
-              <label class="inline-flex items-center gap-2 cursor-pointer text-sm text-slate-700">
-                <input type="radio" bind:group={vieneConNinos} value="No" class="h-4 w-4 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
-                <span>No</span>
-              </label>
-            </div>
-
-            {#if vieneConNinos === 'Si'}
-              <div class="mt-3 space-y-3">
-                <div>
-                  <label for="cant_ninos" class="block text-xs font-semibold text-slate-700 mb-1">
-                    ¿Cuántos niños menores de 10 años lo acompañan?
-                  </label>
-                  <select 
-                    id="cant_ninos"
-                    bind:value={cantidadNinos}
-                    class="w-full md:w-40 px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-800 text-sm focus:outline-none focus:border-emerald-500 cursor-pointer"
-                  >
-                    <option value={1}>1 niño</option>
-                    <option value={2}>2 niños</option>
-                    <option value={3}>3 niños</option>
-                    <option value={4}>4 o más niños</option>
-                  </select>
-                </div>
-
-                <div>
-                  <textarea 
-                    bind:value={nombresNinos}
-                    required
-                    rows="2"
-                    placeholder="Digita los nombres completos y edades de los niños" 
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200 text-sm resize-none"
-                  ></textarea>
-                </div>
-              </div>
-            {/if}
-          </div>
-
           <!-- Botón de Envío Verde -->
           <div class="pt-4">
             <button 
@@ -271,14 +172,46 @@
               disabled={cargando}
               class="w-full py-4 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-extrabold text-center text-sm tracking-wide shadow-lg hover:shadow-emerald-500/20 active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {cargando ? 'Guardando registro...' : 'Confirmar Mi Inscripción al Congreso'}
+              {cargando ? 'Guardando registro...' : 'Enviar Inscripcion'}
             </button>
           </div>
 
         </form>
-      {/if}
 
+      </div>
     </div>
 
   </div>
+
+  <!-- OVERLAY DE CONFIRMACIÓN -->
+  {#if mostrarOverlay}
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm transition-opacity">
+      <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Icono de éxito -->
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+
+        <div class="space-y-1">
+          <h3 class="text-xl font-extrabold text-slate-900">¡Inscripción Exitosa!</h3>
+          <p class="text-sm text-slate-500">Tus datos han sido registrados correctamente para el Congreso 2026. ¡Te esperamos!</p>
+        </div>
+
+        <!-- Botón único de cierre -->
+        <div class="pt-2">
+          <button 
+            on:click={cerrarOverlay}
+            class="w-full py-3 px-6 bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-bold rounded-xl text-sm transition-colors cursor-pointer shadow-md shadow-emerald-500/20"
+          >
+            Cerrar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  {/if}
+
 </section>
