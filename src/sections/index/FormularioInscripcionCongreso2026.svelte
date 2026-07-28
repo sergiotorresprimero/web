@@ -39,7 +39,7 @@
 
       if (error) throw error;
 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Se elimina el window.scrollTo para mantener la posición actual del usuario
       mostrarOverlay = true;
       limpiarCampos();
     } catch (err) {
@@ -63,7 +63,7 @@
   }
 </script>
 
-<section id="inscripcion" class="bg-white text-slate-600 py-12 md:py-16 border-t border-slate-100 relative overflow-hidden">
+<section id="inscripcion" class="bg-white text-slate-600 py-10 md:py-14 border-t border-slate-100 relative overflow-hidden">
   <!-- Luces de fondo sutiles -->
   <div class="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-emerald-100/40 blur-[120px] rounded-full pointer-events-none"></div>
 
@@ -77,9 +77,9 @@
     </div>
 
     <!-- Formulario con su texto guía centrado y pegado arriba de la card -->
-    <div class="space-y-3">
+    <div class="space-y-5">
       <!-- Texto guía con tamaño aumentado (text-sm md:text-base) -->
-      <p class="text-sm md:text-base text-slate-500 font-medium text-center px-2">
+      <p class="text-md md:text-base text-slate-600 font-medium text-center px-2">
         Por favor diligencia los siguientes datos:
       </p>
 
@@ -95,7 +95,7 @@
 
           <!-- Nombre Completo -->
           <div>
-            <label for="nombre" class="block text-sm font-semibold text-slate-800 mb-2">Nombre Completo *</label>
+            <label for="nombre" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">Nombre Completo: *</label>
             <input 
               type="text" 
               id="nombre" 
@@ -108,7 +108,7 @@
           <!-- Teléfono y Ciudad -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="telefono" class="block text-sm font-semibold text-slate-800 mb-2">Teléfono / WhatsApp *</label>
+              <label for="telefono" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">Teléfono / WhatsApp: *</label>
               <input 
                 type="tel" 
                 id="telefono" 
@@ -119,7 +119,7 @@
             </div>
 
             <div>
-              <label for="ciudad" class="block text-sm font-semibold text-slate-800 mb-2">Ciudad *</label>
+              <label for="ciudad" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">Ciudad: *</label>
               <input 
                 type="text" 
                 id="ciudad" 
@@ -132,7 +132,7 @@
 
           <!-- Pregunta 1: Congregación -->
           <div>
-            <label for="congregacion" class="block text-sm font-semibold text-slate-800 mb-2">Nombre de la congregación donde asiste *</label>
+            <label for="congregacion" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">Nombre de la congregación donde asiste: *</label>
             <div class="relative">
               <select 
                 id="congregacion" 
@@ -170,9 +170,9 @@
             <button 
               type="submit" 
               disabled={cargando}
-              class="w-full py-4 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-extrabold text-center text-sm tracking-wide shadow-lg hover:shadow-emerald-500/20 active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              class="w-full py-4 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-white font-semibold text-center text-md sm:text-[15px] tracking-normal shadow-lg hover:shadow-emerald-500/20 active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {cargando ? 'Guardando registro...' : 'Enviar Inscripcion'}
+              {cargando ? 'Guardando registro...' : 'Completar Inscripción'}
             </button>
           </div>
 
