@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
 import Navbar from '../components/Navbar.svelte';
-import Footer from '../components/Footer.astro';
 
 // 1. Importamos tu imagen original
 import logoOriginal from '../assets/logo.png';
@@ -9,32 +8,64 @@ import logoOriginal from '../assets/logo.png';
 // 2. Importamos la herramienta de optimización de Astro
 import { getImage } from 'astro:assets';
 
-// 3. Procesamos la imagen para que Astro cree un WebP optimizado de 40x40 píxeles
+// 3. Definimos las Props que el Layout puede recibir desde cualquier página
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+// 4. Desestructuramos con valores por defecto (fallback) por si una página no los envía
+const { 
+  title = "Centro Mundial de Evangelismo", 
+  description = "Sitio oficial del Centro Mundial de Evangelismo.", 
+  image = "/images/social-preview.jpg" 
+} = Astro.props;
+
+// 5. Manejo seguro de URLs para desarrollo local y producción
+const canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.pathname;
+const imageURL = Astro.site ? new URL(image, Astro.site).href : image;
+
+// 6. Procesamos la imagen para que Astro cree un WebP optimizado de 40x40 píxeles
 const logoOptimizado = await getImage({
-  src: logoOriginal,
-  width: 40,
-  height: 40,
-  format: 'webp'
+    src: logoOriginal,
+    width: 40,
+    height: 40,
+    format: 'webp'
 });
-
 ---
-
-
-
 
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>Centro Mundial de Evangelismo</title>
-	</head>
-	<body class="bg-base-100 text-base-content antialiased">
-        <Navbar client:load srcLogo={logoOptimizado.src} />
-		
-		<slot />
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        
+        <!-- SEO y Título Dinámico -->
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalURL} />
 
-		
-	</body>
+        <!-- Open Graph / WhatsApp / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={imageURL} />
+
+        <!-- Twitter Cards -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={canonicalURL} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageURL} />
+    </head>
+    <body class="bg-base-100 text-base-content antialiased flex flex-col min-h-screen">
+        <Navbar client:load srcLogo={logoOptimizado.src} />
+        
+        <main class="flex-grow">
+            <slot />
+        </main>
+    </body>
 </html>

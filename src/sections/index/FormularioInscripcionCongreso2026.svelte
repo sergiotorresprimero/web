@@ -63,7 +63,7 @@
   }
 </script>
 
-<section id="inscripcion" class="bg-white text-slate-600 py-10 md:py-14 border-t border-slate-100 relative overflow-hidden">
+<section id="inscripcion" class="bg-white text-slate-600 pt-10 md:pt-14 pb-5 border-t border-slate-100 relative overflow-hidden">
   <!-- Luces de fondo sutiles -->
   <div class="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-emerald-100/40 blur-[120px] rounded-full pointer-events-none"></div>
 
@@ -95,7 +95,7 @@
 
           <!-- Nombre Completo -->
           <div>
-            <label for="nombre" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">Nombre Completo: *</label>
+            <label for="nombre" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">*Nombre Completo:</label>
             <input 
               type="text" 
               id="nombre" 
@@ -108,7 +108,7 @@
           <!-- Teléfono y Ciudad -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="telefono" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">Teléfono / WhatsApp: *</label>
+              <label for="telefono" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">*Teléfono/WhatsApp:</label>
               <input 
                 type="tel" 
                 id="telefono" 
@@ -119,7 +119,7 @@
             </div>
 
             <div>
-              <label for="ciudad" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">Ciudad: *</label>
+              <label for="ciudad" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">*Ciudad:</label>
               <input 
                 type="text" 
                 id="ciudad" 
@@ -132,7 +132,7 @@
 
           <!-- Pregunta 1: Congregación -->
           <div>
-            <label for="congregacion" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">Nombre de la congregación donde asiste: *</label>
+            <label for="congregacion" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">*Nombre de la congregación donde asiste:</label>
             <div class="relative">
               <select 
                 id="congregacion" 
@@ -141,7 +141,8 @@
                 class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200 text-sm appearance-none cursor-pointer"
               >
                 <option value="" disabled selected>Selecciona una opción</option>
-                <option value="Centro Mundial de Evangelismo">Centro Mundial de Evangelismo</option>
+                <option value="Centro Mundial de Evangelismo - Cali">Centro Mundial de Evangelismo - Cali</option>
+                <option value="Centro Mundial de Evangelismo - La Union Nariño">Centro Mundial de Evangelismo - La Unión Nariño</option>
                 <option value="Otra">Otra</option>
                 <option value="No asisto a ninguna iglesia">No asisto a ninguna iglesia</option>
               </select>
