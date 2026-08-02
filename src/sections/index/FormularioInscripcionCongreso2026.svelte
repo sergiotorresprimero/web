@@ -1,14 +1,12 @@
 <script>
-  import { supabase } from '../../lib/supabase.js';
-  import { capitalizarTexto } from '../../lib/utils.js';
+  import {
+    CONGREGACION_OPCIONES,
+    enviarInscripcion,
+    crearEstadoFormularioVacio,
+  } from '../../config/formularioCongreso.js';
 
-  // Variables de estado del formulario
-  let nombre = '';
-  let telefono = '';
-  let ciudad = '';
-  
-  let congregacion = '';
-  let otraCongregacion = '';
+  // Estado del formulario (estructura centralizada)
+  let form = crearEstadoFormularioVacio();
 
   // Estados de la interfaz
   let cargando = false;
@@ -19,43 +17,25 @@
     event.preventDefault();
     cargando = true;
     errorMensaje = '';
-    
-    const congregacionSeleccionada = congregacion === 'Otra' ? otraCongregacion.trim() : congregacion;
 
-    const datosEnvio = {
-      nombre_completo: capitalizarTexto(nombre),
-      telefono: telefono.trim(),
-      ciudad: capitalizarTexto(ciudad),
-      congregacion: congregacion === 'Otra' ? capitalizarTexto(congregacionSeleccionada) : congregacionSeleccionada,
-      ocupacion: 'Ninguna',
-      cantidad_ninos: 0,
-      nombres_ninos: null
-    };
+    // Formulario público: estado_asistencia = 'pendiente' (por defecto)
+    const { data, error } = await enviarInscripcion(form, {
+      estadoAsistencia: 'pendiente',
+    });
 
-    try {
-      const { data, error } = await supabase
-        .from('inscripciones')
-        .insert([datosEnvio]);
-
-      if (error) throw error;
-
-      // Se elimina el window.scrollTo para mantener la posición actual del usuario
+    if (error) {
+      console.error('Error al insertar:', error);
+      errorMensaje = error.message || 'Ocurrió un error al guardar tu inscripción. Por favor intenta de nuevo.';
+    } else {
       mostrarOverlay = true;
       limpiarCampos();
-    } catch (err) {
-      console.error('Error al insertar:', err);
-      errorMensaje = 'Ocurrió un error al guardar tu inscripción. Por favor intenta de nuevo.';
-    } finally {
-      cargando = false;
     }
+
+    cargando = false;
   }
 
   function limpiarCampos() {
-    nombre = '';
-    telefono = '';
-    ciudad = '';
-    congregacion = '';
-    otraCongregacion = '';
+    form = crearEstadoFormularioVacio();
   }
 
   function cerrarOverlay() {
@@ -99,7 +79,7 @@
             <input 
               type="text" 
               id="nombre" 
-              bind:value={nombre}
+              bind:value={form.nombre_completo}
               required 
               class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200 text-sm"
             />
@@ -112,7 +92,7 @@
               <input 
                 type="tel" 
                 id="telefono" 
-                bind:value={telefono}
+                bind:value={form.telefono}
                 required 
                 class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200 text-sm"
               />
@@ -123,28 +103,26 @@
               <input 
                 type="text" 
                 id="ciudad" 
-                bind:value={ciudad}
+                bind:value={form.ciudad}
                 required 
                 class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200 text-sm"
               />
             </div>
           </div>
 
-          <!-- Pregunta 1: Congregación -->
+          <!-- Pregunta 1: Congregación (opciones centralizadas) -->
           <div>
             <label for="congregacion" class="block text-md sm:text-[15px] font-semibold text-slate-800 mb-2">*Nombre de la congregación donde asiste:</label>
             <div class="relative">
               <select 
                 id="congregacion" 
-                bind:value={congregacion}
+                bind:value={form.congregacion}
                 required
                 class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200 text-sm appearance-none cursor-pointer"
               >
-                <option value="" disabled selected>Selecciona una opción</option>
-                <option value="Centro Mundial de Evangelismo - Cali">Centro Mundial de Evangelismo - Cali</option>
-                <option value="Centro Mundial de Evangelismo - La Union Nariño">Centro Mundial de Evangelismo - La Unión Nariño</option>
-                <option value="Otra">Otra</option>
-                <option value="No asisto a ninguna iglesia">No asisto a ninguna iglesia</option>
+                {#each CONGREGACION_OPCIONES as opcion (opcion.valor)}
+                  <option value={opcion.valor} disabled={opcion.disabled || false}>{opcion.etiqueta}</option>
+                {/each}
               </select>
               <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -153,11 +131,11 @@
               </div>
             </div>
 
-            {#if congregacion === 'Otra'}
+            {#if form.congregacion === 'Otra'}
               <div class="mt-3">
                 <input 
                   type="text" 
-                  bind:value={otraCongregacion}
+                  bind:value={form.otra_congregacion}
                   required
                   placeholder="Digita el nombre de tu congregación" 
                   class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200 text-sm"

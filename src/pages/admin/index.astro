@@ -1,0 +1,10 @@
+---
+// src/pages/admin/index.astro
+import Layout from '../../layouts/Layout.astro';
+import AdminContainer from '../../sections/admin/AdminContainer.svelte';
+---
+
+<Layout title="Panel Administrativo - Congreso 2026">
+  <!-- client:load le indica a Astro que renderice este componente en el navegador -->
+  <AdminContainer client:load />
+</Layout>

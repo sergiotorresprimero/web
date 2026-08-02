@@ -2,6 +2,11 @@
   import { onMount } from 'svelte';
   import { supabase } from '../../lib/supabase.js';
   import { capitalizarTexto } from '../../lib/utils.js';
+  import {
+    CONGREGACION_OPCIONES,
+    enviarInscripcion,
+    crearEstadoFormularioVacio,
+  } from '../../config/formularioCongreso.js';
 
   let userEmail = '';
   let inscripciones = [];
@@ -21,13 +26,7 @@
 
   // Estados para Modal: Registro Rápido (Nuevo Asistente In-situ)
   let showAddModal = false;
-  let newAttendee = { 
-    nombre_completo: '', 
-    telefono: '', 
-    ciudad: '', 
-    congregacion: '', 
-    congregacionOtra: '' 
-  };
+  let newAttendee = crearEstadoFormularioVacio();
   let savingNew = false;
 
   // Estados para los Modales Overlay existentes (Editar, Desconfirmar, Eliminar)
@@ -46,7 +45,7 @@
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
-      window.location.href = '/admin/login';
+      window.location.href = '/admin';
       return;
     }
 
@@ -124,69 +123,28 @@
     await executeToggle(item, 'pendiente');
   }
 
-  // Funciones de Registro Rápido In-situ con Validación Completa
+  // Funciones de Registro Rápido In-situ (usando lógica centralizada)
   async function quickRegister() {
-    // Validar campos obligatorios vacíos o con puros espacios
-    if (!newAttendee.nombre_completo || !newAttendee.nombre_completo.trim()) {
-      showToast('El nombre completo es obligatorio', 'error');
-      return;
-    }
-    if (!newAttendee.telefono || !newAttendee.telefono.trim()) {
-      showToast('El teléfono es obligatorio', 'error');
-      return;
-    }
-    if (!newAttendee.ciudad || !newAttendee.ciudad.trim()) {
-      showToast('La ciudad es obligatoria', 'error');
-      return;
-    }
-    if (!newAttendee.congregacion) {
-      showToast('Por favor selecciona una congregación', 'error');
-      return;
-    }
-
-    // Definir y validar la congregación final según la selección
-    let congregacionFinal = newAttendee.congregacion;
-    if (congregacionFinal === 'Otra') {
-      if (!newAttendee.congregacionOtra || !newAttendee.congregacionOtra.trim()) {
-        showToast('Por favor especifica el nombre de la congregación', 'error');
-        return;
-      }
-      congregacionFinal = capitalizarTexto(newAttendee.congregacionOtra);
-    } else if (!congregacionFinal || !congregacionFinal.trim()) {
-      showToast('La congregación es obligatoria', 'error');
-      return;
-    }
-
     savingNew = true;
-    const { data, error } = await supabase
-      .from('inscripciones')
-      .insert([{
-        nombre_completo: capitalizarTexto(newAttendee.nombre_completo),
-        telefono: newAttendee.telefono.trim(),
-        ciudad: capitalizarTexto(newAttendee.ciudad),
-        congregacion: congregacionFinal,
-        estado_asistencia: 'asistió'
-      }])
-      .select()
-      .single();
+
+    // Envío usando el módulo compartido. Admin marca asistencia inmediata = 'asistió'
+    const { data, error } = await enviarInscripcion(newAttendee, {
+      estadoAsistencia: 'asistió',
+    });
 
     savingNew = false;
 
     if (error) {
       console.error(error);
-      showToast(`Error al registrar: ${error.message}`, 'error');
-    } else {
-      inscripciones = [data, ...inscripciones];
-      showAddModal = false;
-      newAttendee = { 
-        nombre_completo: '', 
-        telefono: '', 
-        ciudad: '', 
-        congregacion: '', 
-        congregacionOtra: '' 
-      };
-      showToast(`¡${data.nombre_completo} registrado y confirmado con éxito!`);
+      showToast(error.message || `Error al registrar`, 'error');
+      return;
     }
+
+    // Éxito: actualizar lista, cerrar modal, limpiar form
+    inscripciones = [data, ...inscripciones];
+    showAddModal = false;
+    newAttendee = crearEstadoFormularioVacio();
+    showToast(`¡${data.nombre_completo} registrado y confirmado con éxito!`);
   }
 
   // Funciones de Edición
@@ -259,7 +217,7 @@
 
   async function handleLogout() {
     await supabase.auth.signOut();
-    window.location.href = '/admin/login';
+    window.location.href = '/admin';
   }
 
   function normalizeText(text) {
@@ -407,17 +365,16 @@
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1 uppercase">Congregación *</label>
             <select bind:value={newAttendee.congregacion} class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-slate-600 text-slate-200">
-              <option value="" disabled selected>Seleccione una opción</option>
-              <option value="Centro Mundial de Evangelismo">Centro Mundial de Evangelismo</option>
-              <option value="Otra">Otra</option>
-              <option value="No asisto a ninguna iglesia">No asisto a ninguna iglesia</option>
+              {#each CONGREGACION_OPCIONES as opcion (opcion.valor)}
+                <option value={opcion.valor} disabled={opcion.disabled || false}>{opcion.etiqueta}</option>
+              {/each}
             </select>
           </div>
 
           {#if newAttendee.congregacion === 'Otra'}
             <div>
               <label class="block text-xs font-medium text-slate-400 mb-1 uppercase">Especificar Congregación *</label>
-              <input type="text" bind:value={newAttendee.congregacionOtra} class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-slate-600 text-slate-200" />
+              <input type="text" bind:value={newAttendee.otra_congregacion} class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-slate-600 text-slate-200" />
             </div>
           {/if}
         </div>

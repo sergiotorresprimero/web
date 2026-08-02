@@ -1,11 +1,4 @@
 ---
-// src/pages/admin/dashboard.astro
-import Layout from '../../layouts/Layout.astro';
-import DashboardView from '../../sections/admin/DashboardView.svelte';
+// src/pages/admin/dashboard.astro - REDIRECCIÓN a ruta unificada
+return Astro.redirect('/admin');
 ---
-
-<Layout title="Dashboard - Panel Administrativo">
-  <main class="min-h-screen bg-slate-950 text-slate-100">
-    <DashboardView client:load />
-  </main>
-</Layout>
