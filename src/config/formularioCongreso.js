@@ -154,9 +154,7 @@ export async function enviarInscripcion(datosCrudos, opciones = {}) {
   const { data, error } = await supabase
     .from('inscripciones')
     .insert([datosEnvio])
-    .select()
-    .single();
-
+  
   return { data, error };
 }
 
