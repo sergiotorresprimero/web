@@ -128,7 +128,7 @@ export function validarFormulario(datosNormalizados, datosOriginales) {
  * @param {Object} [opciones] - Configuración adicional
  * @param {'pendiente'|'asistió'} [opciones.estadoAsistencia='pendiente'] - Estado inicial
  * @param {Object} [opciones.camposExtra={}] - Campos adicionales a incluir en el insert
- * @returns {Promise<{data: any, error: any}>} Resultado de la inserción
+ * @returns {Promise<{data: any, error: any}>} Resultado de la inserción con los datos enviados
  */
 export async function enviarInscripcion(datosCrudos, opciones = {}) {
   const {
@@ -142,7 +142,11 @@ export async function enviarInscripcion(datosCrudos, opciones = {}) {
     return { data: null, error: { message: errorValidacion } };
   }
 
+  // Generamos el UUID único en el cliente para el código QR y lo incluimos
+  const qrUuidGenerado = crypto.randomUUID();
+
   const datosEnvio = {
+    qr_uuid: qrUuidGenerado,
     ...datosNormalizados,
     estado_asistencia: estadoAsistencia,
     ocupacion: 'Ninguna',
@@ -151,11 +155,16 @@ export async function enviarInscripcion(datosCrudos, opciones = {}) {
     ...camposExtra,
   };
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('inscripciones')
-    .insert([datosEnvio])
-  
-  return { data, error };
+    .insert([datosEnvio]);
+
+  if (error) {
+    return { data: null, error };
+  }
+
+  // Retornamos los datos enviados (incluyendo el qr_uuid) para usarlos en la UI
+  return { data: datosEnvio, error: null };
 }
 
 /**

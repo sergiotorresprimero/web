@@ -7,6 +7,9 @@
     enviarInscripcion,
     crearEstadoFormularioVacio,
   } from '../../config/formularioCongreso.js';
+  
+  // Importación del componente de escáner QR
+  import EscanerQr from './EscanerQr.svelte';
 
   let userEmail = '';
   let inscripciones = [];
@@ -28,6 +31,9 @@
   let showAddModal = false;
   let newAttendee = crearEstadoFormularioVacio();
   let savingNew = false;
+
+  // Estado para mostrar u ocultar el componente del Escáner QR
+  let showScannerModal = false;
 
   // Estados para los Modales Overlay existentes (Editar, Desconfirmar, Eliminar)
   let showEditModal = false;
@@ -127,7 +133,6 @@
   async function quickRegister() {
     savingNew = true;
 
-    // Envío usando el módulo compartido. Admin marca asistencia inmediata = 'asistió'
     const { data, error } = await enviarInscripcion(newAttendee, {
       estadoAsistencia: 'asistió',
     });
@@ -140,7 +145,6 @@
       return;
     }
 
-    // Éxito: actualizar lista, cerrar modal, limpiar form
     inscripciones = [data, ...inscripciones];
     showAddModal = false;
     newAttendee = crearEstadoFormularioVacio();
@@ -264,6 +268,35 @@
     }`}>
       <span class={`w-2 h-2 rounded-full ${toastType === 'success' ? 'bg-emerald-400 animate-pulse' : 'bg-red-400 animate-pulse'}`}></span>
       {toastMessage}
+    </div>
+  {/if}
+
+  <!-- MODAL / CONTENEDOR DEL ESCÁNER QR -->
+  {#if showScannerModal}
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+          <h2 class="text-lg font-bold text-slate-100">Escáner de QR</h2>
+          <button 
+            on:click={() => showScannerModal = false}
+            class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 rounded-lg transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+        
+        <!-- Componente EscanerQr -->
+        <EscanerQr on:checked={() => { fetchInscripciones(); }} />
+
+        <div class="mt-4 text-center">
+          <button 
+            on:click={() => showScannerModal = false}
+            class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors w-full"
+          >
+            Cerrar Escáner
+          </button>
+        </div>
+      </div>
     </div>
   {/if}
 
@@ -529,7 +562,16 @@
       >
         <span>+</span> Nuevo Asistente
       </button>
+
+      <!-- Botón para activar el Escáner QR -->
+      <button 
+        on:click={() => showScannerModal = true}
+        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 shadow-lg shadow-indigo-900/20"
+      >
+        <span>📷</span> Escanear QR
+      </button>
     </div>
+
     <div class="text-xs text-slate-400 text-right sm:text-left">
       Asistentes: <span class="text-emerald-400 font-bold">{inscripciones.filter(i => i.estado_asistencia === 'asistió').length}</span> / {inscripciones.length}
     </div>
